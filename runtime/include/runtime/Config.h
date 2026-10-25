@@ -12,6 +12,10 @@ struct SimulationConfig {
     int screen_height = 450;
     int target_fps    = 0;      // 0 = uncapped (profiling)
 
+    // Simulation
+    float fixed_dt = 0.0f;      // > 0: fixed timestep (replicable); 0: real frame time
+    unsigned int seed = 1;      // RNG seed for scenarios that randomise
+
     // World
     size_t cell_count = 400;    // must be a perfect square (rows x rows grid)
 

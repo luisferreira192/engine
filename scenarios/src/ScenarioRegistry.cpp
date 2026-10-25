@@ -2,6 +2,7 @@
 
 #include "scenarios/DropTestScenario.h"
 #include "scenarios/MassTestScenario.h"
+#include "scenarios/ReplicabilityScenario.h"
 #include "scenarios/StressTestScenario.h"
 
 namespace {
@@ -19,9 +20,10 @@ std::unique_ptr<Scenario> create()
 
 // Register new scenarios here.
 constexpr Entry REGISTRY[] = {
-    { "stress",    create<StressTestScenario> },
-    { "mass_test", create<MassTestScenario>   },
-    { "drop_test", create<DropTestScenario>   },
+    { "stress",        create<StressTestScenario>    },
+    { "mass_test",     create<MassTestScenario>      },
+    { "drop_test",     create<DropTestScenario>      },
+    { "replicability", create<ReplicabilityScenario> },
 };
 
 } // namespace

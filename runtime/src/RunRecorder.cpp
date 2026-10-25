@@ -59,7 +59,8 @@ void write_body_row(std::ostream& out, size_t frame, float time,
 
 void write_diagnostics_header(std::ostream& out)
 {
-    out << "frame,time,momentum_x,momentum_y,kinetic_energy,dynamic_bodies\n";
+    out << "frame,time,momentum_x,momentum_y,"
+           "kinetic_energy,potential_energy,total_energy,dynamic_bodies\n";
 }
 
 void write_diagnostics_row(std::ostream& out, size_t frame, float time,
@@ -67,7 +68,9 @@ void write_diagnostics_row(std::ostream& out, size_t frame, float time,
 {
     out << frame << ',' << time << ','
         << d.momentum.x << ',' << d.momentum.y << ','
-        << d.kinetic_energy << ',' << d.dynamic_bodies << '\n';
+        << d.kinetic_energy << ',' << d.potential_energy << ','
+        << d.kinetic_energy + d.potential_energy << ','
+        << d.dynamic_bodies << '\n';
 }
 
 } // namespace

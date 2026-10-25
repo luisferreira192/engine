@@ -1,5 +1,6 @@
 #include "engine/World.h"
 
+#include <bit>
 #include <utility>
 
 World::World(Rectangle bounds, size_t cell_count, WorldSettings settings)
@@ -104,6 +105,7 @@ void World::resolve_body_collisions()
 WorldDiagnostics World::diagnostics() const
 {
     WorldDiagnostics d;
+    const Vector2 g = settings_.gravity;
 
     for (const Body& body : bodies_) {
         if (body.is_static())
@@ -115,8 +117,33 @@ WorldDiagnostics World::diagnostics() const
         d.momentum.x += m * v.x;
         d.momentum.y += m * v.y;
         d.kinetic_energy += 0.5f * m * (v.x * v.x + v.y * v.y);
+        d.potential_energy -= m * (g.x * body.position.x + g.y * body.position.y);
         ++d.dynamic_bodies;
     }
 
     return d;
+}
+
+uint64_t World::state_checksum() const
+{
+    // FNV-1a over the raw float bits.
+    uint64_t hash = 14695981039346656037ull;
+
+    auto mix = [&hash](float value) {
+        uint32_t bits = std::bit_cast<uint32_t>(value);
+
+        for (int i = 0; i < 4; ++i) {
+            hash ^= (bits >> (i * 8)) & 0xffu;
+            hash *= 1099511628211ull;
+        }
+    };
+
+    for (const Body& body : bodies_) {
+        mix(body.position.x);
+        mix(body.position.y);
+        mix(body.velocity.x);
+        mix(body.velocity.y);
+    }
+
+    return hash;
 }

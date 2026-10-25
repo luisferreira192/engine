@@ -41,6 +41,8 @@ Application::Application(const SimulationConfig& config, Scenario& scenario)
 
 World Application::build_world(const SimulationConfig& config, Scenario& scenario)
 {
+    SetRandomSeed(config.seed);
+
     World world(
         Rectangle{
             0.0f,
@@ -63,7 +65,7 @@ int Application::run()
     while (!window_.should_close() && frame_ <= config_.max_frames) {
         timer_.start();
 
-        float dt = GetFrameTime();
+        float dt = config_.fixed_dt > 0.0f ? config_.fixed_dt : GetFrameTime();
         step_simulation(dt);
         render();
 
@@ -83,7 +85,10 @@ int Application::run()
         return 1;
     }
 
-    std::cout << "Run logged to " << recorder_.directory() << '\n';
+    std::cout << "Run logged to " << recorder_.directory() << '\n'
+              << "Final state checksum: " << std::hex << world_.state_checksum()
+              << std::dec << " (" << frame_ << " steps, dt "
+              << (config_.fixed_dt > 0.0f ? "fixed" : "from frame time") << ")\n";
 
     return 0;
 }

@@ -8,6 +8,7 @@
 #include <raylib.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 // Environment rules, set per scenario.
@@ -28,6 +29,7 @@ struct WorldSettings {
 struct WorldDiagnostics {
     Vector2 momentum = {};
     float kinetic_energy = 0.0f;
+    float potential_energy = 0.0f;   // from gravity, relative to the origin
     size_t dynamic_bodies = 0;
 };
 
@@ -49,6 +51,10 @@ public:
     void resolve_body_collisions();
 
     WorldDiagnostics diagnostics() const;
+
+    // Hash of the exact bits of every body's position and velocity. Two runs
+    // with the same checksum ended in bit-identical states.
+    uint64_t state_checksum() const;
 
     Rectangle bounds() const { return bounds_; }
     const WorldSettings& settings() const { return settings_; }

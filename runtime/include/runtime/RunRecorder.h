@@ -16,7 +16,7 @@
 //   timelog         phase timings per stats block        (written on save)
 //   candidatestats  cumulative broad-phase counters      (written on save)
 //   bodies          every property of every body, sampled (streamed)
-//   diagnostics     momentum / kinetic energy per frame   (streamed)
+//   diagnostics     momentum / energy per frame           (streamed)
 //
 // timelog and candidatestats keep the layout anal.py expects.
 class RunRecorder {
