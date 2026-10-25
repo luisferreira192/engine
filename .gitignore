@@ -1,0 +1,16 @@
+# Build output
+build/
+.cache/
+compile_commands.json
+
+# Profiler dumps
+perf.data
+perf.data.old
+
+# Run output (keeps the 2026-09-26 analysis set)
+timings/*
+!timings/2026-09-26/
+experiments/
+
+# Python
+__pycache__/

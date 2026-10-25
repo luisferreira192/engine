@@ -1,0 +1,39 @@
+float ax = a.position.x - colA.width / 2.0f;
+                        float ay = a.position.y - colA.height / 2.0f;
+
+                        float bx = b.position.x - colB.width / 2.0f;
+                        float by = b.position.y - colB.height / 2.0f;
+
+                        float overlap_x =
+                            std::min(ax + colA.width, bx + colB.width)
+                            - std::max(ax, bx);
+
+                        float overlap_y =
+                            std::min(ay + colA.height, by + colB.height)
+                            - std::max(ay, by);
+
+                        if (overlap_x <= 0.0f || overlap_y <= 0.0f)
+                            return;
+
+                        if (overlap_x < overlap_y) {
+                            float relative_vx =
+                                a.velocity.x - b.velocity.x;
+
+                            bool approaching =
+                                (a.position.x < b.position.x && relative_vx > 0.0f) ||
+                                (a.position.x > b.position.x && relative_vx < 0.0f);
+
+                            if (approaching)
+                                std::swap(a.velocity.x, b.velocity.x);
+                        }
+                        else {
+                            float relative_vy =
+                                a.velocity.y - b.velocity.y;
+
+                            bool approaching =
+                                (a.position.y < b.position.y && relative_vy > 0.0f) ||
+                                (a.position.y > b.position.y && relative_vy < 0.0f);
+
+                            if (approaching)
+                                std::swap(a.velocity.y, b.velocity.y);
+                        }
