@@ -1,6 +1,6 @@
-#include "Application.h"
-#include "Config.h"
-#include "Scenario.h"
+#include "runtime/Application.h"
+#include "runtime/Config.h"
+#include "scenarios/ScenarioRegistry.h"
 
 #include <iostream>
 #include <string_view>

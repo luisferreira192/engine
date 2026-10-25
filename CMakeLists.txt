@@ -20,37 +20,42 @@ target_compile_options(pv_warnings
         -Wnon-virtual-dtor
 )
 
-file(GLOB_RECURSE PV_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-)
+# ---------------------------------------------------------------------------
+# Layers
+#
+#   engine     core physics (bodies, colliders, broad/narrow phase, world)
+#   runtime    harness: window, main loop, rendering, timing, run logging,
+#              the Scenario interface              -> depends on engine
+#   scenarios  concrete test scenarios + registry  -> depends on runtime
+#
+# Each layer lives in <layer>/include/<layer>/ and <layer>/src/, so includes
+# read as "engine/World.h", "runtime/Application.h", ...
+# Sources and headers are globbed: drop a file in and reconfigure.
+# ---------------------------------------------------------------------------
 
-if(PV_SOURCES)
-    add_library(engine STATIC ${PV_SOURCES})
-    set(PV_SCOPE PUBLIC)
-    target_link_libraries(engine
-        PUBLIC  raylib
-        PRIVATE pv_warnings
+function(engine_add_layer name)
+    set(dir ${CMAKE_CURRENT_SOURCE_DIR})
+
+    file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${dir}/src/*.cpp)
+    file(GLOB_RECURSE headers CONFIGURE_DEPENDS ${dir}/include/*.h)
+
+    add_library(${name} STATIC ${sources})
+
+    target_sources(${name}
+        PUBLIC
+            FILE_SET HEADERS
+            BASE_DIRS ${dir}/include
+            FILES ${headers}
     )
-endif()
 
-target_include_directories(engine
-    ${PV_SCOPE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+    target_link_libraries(${name} PRIVATE pv_warnings)
 
+    set_target_properties(${name} PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+endfunction()
 
-file(GLOB_RECURSE PV_HEADERS CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
-)
-
-target_sources(engine
-    ${PV_SCOPE}
-        FILE_SET pv_headers TYPE HEADERS
-        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
-        FILES ${PV_HEADERS}
-)
-
-set_target_properties(engine PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+add_subdirectory(engine)
+add_subdirectory(runtime)
+add_subdirectory(scenarios)
 
 # ---------------------------------------------------------------------------
 # Executable
@@ -62,7 +67,7 @@ add_executable(engine_e
 
 target_link_libraries(engine_e
     PRIVATE
-        engine
+        scenarios
         pv_warnings
 )
 
